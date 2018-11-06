@@ -6,6 +6,6 @@ Blue X-ray Eraser v1.0
 # 컴파일 방법
 make
 
-#실행 방법
+# 실행 방법
 ./bxre
 
