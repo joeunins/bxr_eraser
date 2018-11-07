@@ -29,14 +29,24 @@ void on_window_main_destroy();
 void on_smn_open_activate (GtkMenuItem *smn_open, gpointer *data);
 void on_smn_quit_activate (GtkMenuItem *smn_quit, gpointer *data);
 void on_smn_log_activate (GtkMenuItem *smn_log, gpointer *data);
+//void on_smn_about_activate (GtkMenuItem *smn_about, GtkAboutDialog *window_about); 
+void on_smn_about_activate (GtkMenuItem *smn_about, gpointer *data); 
 
 void on_btn_fileopen_clicked (GtkButton *btn_fileopen, gpointer *data);
 void on_btn_easy_clicked (GtkButton *btn_easy, gpointer data );
+//void on_btn_about_ok_clicked (GtkButton *btn_about_ok, GtkAboutDialog *window_about); 
+void on_btn_about_ok_clicked (GtkButton *btn_about_ok, gpointer *data); 
 
 int func_gtk_dialog_modal(int type, GtkWidget *window, char *message);
 int func_file_eraser(char *filename);
 
 int BXLog(const char *, int , int , const char *, ...);
+
+void on_smn_about_activate (GtkMenuItem *smn_log, gpointer *data)
+{
+    gtk_widget_show(GTK_WIDGET(data));                
+	return;
+}
 
 void on_smn_log_activate (GtkMenuItem *smn_log, gpointer *data)
 {
@@ -91,6 +101,11 @@ void on_smn_quit_activate (GtkMenuItem *smn_quit, gpointer *data)
 	return;
 }
 
+void on_btn_about_ok_clicked (GtkButton *btn_about_ok, gpointer *data)
+{
+    gtk_widget_hide(GTK_WIDGET(data));                
+}
+
 // called when button is clicked
 void on_btn_easy_clicked (GtkButton *btn_easy, gpointer data )
 {
@@ -120,10 +135,6 @@ void on_btn_easy_clicked (GtkButton *btn_easy, gpointer data )
 			gtk_label_set_text(GTK_LABEL(g_lbl_status), "Canceled...");
 			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 0 );
 		}
-//    gtk_widget_show(window);                
-//		sleep(5);
-//		gtk_label_set_text(GTK_LABEL(g_lbl_status), "Ready...");
-//    gtk_widget_show(window);                
 	}
 }
 
@@ -186,17 +197,13 @@ void on_btn_hello_clicked()
 
 int main(int argc, char *argv[])
 {
-//    GtkBuilder      *builder; 
-//    GtkWidget       *window;
-
-//	g_print("basename:[%s]\n", argv[0]);
    	LogName = basename(argv[0]); 
 	gtk_init(&argc, &argv);
 
     builder = gtk_builder_new();
     gtk_builder_add_from_file (builder, "glade/window_main.glade", NULL);
 
-    window = GTK_WIDGET(gtk_builder_get_object(builder, "window_main"));
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "window_main"));
     gtk_builder_connect_signals(builder, NULL);
 
     // get pointers to the two labels
@@ -262,7 +269,6 @@ int func_file_eraser(char *filename)
 
 	memset( message, 0x00, sizeof(message));
 	BXLog( DBG, "Target File Eraser Start : [%s]\n", filename );
-//	g_print("Target File Eraser : [%s]\n", filename );
 	
 	gtk_label_set_text(GTK_LABEL(g_lbl_status), "Eraser Start...");
 
@@ -278,7 +284,7 @@ int func_file_eraser(char *filename)
 		}
 		else
 		{
-			fp = fopen(filename, "r");
+			fp = fopen(filename, "w");
 			sprintf( message, "file size [%ld]", file_info.st_size);
 			gtk_label_set_text(GTK_LABEL(g_lbl_status), message);
 			while (percent < 100.0)
@@ -292,12 +298,17 @@ int func_file_eraser(char *filename)
 				while (gtk_events_pending ()) 
 					gtk_main_iteration (); 
 
-//				g_print("fp[%d], size[%f], file_size[%ld], percent:[%f]\n", fp, size, file_info.st_size, percent );
+				BXLog( DBG, "fp[%d], size[%f], file_size[%ld], percent:[%f]\n", fp, size, file_info.st_size, percent );
 				if( size != file_info.st_size )
 				{
-					fp++;
+					fwrite( "0", 1, 1, fp);
+//					exit(1);
+//					fputs( "0", fp );
+//					fp++='0';
+//					&fp = '0';
 					size++;
 				}	
+				BXLog( DBG, "fp[%d], size[%f], file_size[%ld], percent:[%f]\n", fp, size, file_info.st_size, percent );
 //				g_usleep (100);
 				percent = size/file_info.st_size*100.0;
 				if( (int)size % FILE_DEF_SIZE == 0 )
@@ -308,7 +319,8 @@ int func_file_eraser(char *filename)
 				}
 //				g_print("size[%f], file_size[%ld], percent:[%f]\n", size, file_info.st_size, percent );
 			}  	
-			
+		
+			fclose(fp);
 			memset( message, 0x00, strlen(message));
 			sprintf( message, "file size [%.0f byte/%ld byte]\n", size, file_info.st_size);
 			gtk_label_set_text(GTK_LABEL(g_lbl_status), message);
