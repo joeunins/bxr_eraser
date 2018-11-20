@@ -244,7 +244,7 @@
                 <property name="tooltip_text" translatable="yes">3번 덮어쓰기 삭제</property>
                 <property name="image">btn_3pass_icon</property>
                 <property name="always_show_image">True</property>
-                <signal name="clicked" handler="on_btn_3pass_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_btn_3pass_clicked" object="btn_fileopen" swapped="no"/>
               </object>
               <packing>
                 <property name="x">82</property>
@@ -260,7 +260,7 @@
                 <property name="tooltip_text" translatable="yes">7번 덮어쓰기 삭제</property>
                 <property name="image">btn_7pass_icon</property>
                 <property name="always_show_image">True</property>
-                <signal name="clicked" handler="on_btn_7pass_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_btn_7pass_clicked" object="btn_fileopen" swapped="no"/>
               </object>
               <packing>
                 <property name="x">164</property>
@@ -276,7 +276,7 @@
                 <property name="tooltip_text" translatable="yes">암호화 완전삭제</property>
                 <property name="image">btn_encrypt_icon</property>
                 <property name="always_show_image">True</property>
-                <signal name="clicked" handler="on_btn_encrypt_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_btn_encrypt_clicked" object="btn_fileopen" swapped="no"/>
               </object>
               <packing>
                 <property name="x">246</property>
