@@ -8,7 +8,7 @@
 #include <libgen.h>
 
 #define	PROGRESS_SIZE	102400	//100k
-#define	ERASER_SIZE		256	//1k
+#define	ERASER_SIZE		1024	//1k
 
 /*- Log define ------------*/
 char	*LogName;
@@ -537,58 +537,47 @@ int func_file_eraser(int type, char *filename)
 			for( int i=0 ; i < type ; i++ )
 			{
 				size = 0;
-				BXLog( DBG, "size, st_size, i, type   : [%f/%ld/%d/%d]\n", size, file_info.st_size, i, type );
+//				BXLog( DBG, "size, st_size, i, type   : [%f/%ld/%d/%d]\n", size, file_info.st_size, i, type );
 				BXLog( DBG, "Target File Eraser Start : [%d/%s]\n", i+1, filename );
-				
-				switch(i)
-				{
-				// len = fwrite(stringAsChar, 1, len, file);
-					case 0 :
-						stringAsChar[0] = 'A';
-//							fwrite( stringAsChar, 1, 1, fp);
-//								fwrite( msize, 1, file_info.st_size, fp);
-//							memset( msize, stringAsChar[0], ERASER_SIZE );
-//							fwrite( msize, 1, ERASER_SIZE, fp);
-//							size = file_info.st_size;
-//						size += ERASER_SIZE;
-						break;
-					case 1 :
-						stringAsChar[0] = '^';
-//							fwrite( stringAsChar, 1, 1, fp);
-						break;
-					case 2 :
-						stringAsChar[0] = 'A' + (random() % 26);
-//							fwrite( stringAsChar, 1, 1, fp);
-						break;
-					case 3 :
-						stringAsChar[0] = 'Z';
-//							fwrite( stringAsChar, 1, 1, fp);
-						break;
-					case 4 :
-						stringAsChar[0] = 'A';
-//							fwrite( stringAsChar, 1, 1, fp);
-						break;
-					case 5 :
-						stringAsChar[0] = '^';
-//							fwrite( stringAsChar, 1, 1, fp);
-						break;
-					case 6 :
-						stringAsChar[0] = 'A' + (random() % 26);
-//							fwrite( stringAsChar, 1, 1, fp);
-						break;
-					default :
-						break;
-
-//					exit(1);
-//					fputs( "0", fp );
-//					fp++='0';
-//					&fp = '0';
-				}
-
-				memset( msize, stringAsChar[0], ERASER_SIZE );
-
 				while (size<file_info.st_size)
 				{   
+					switch(i)
+					{
+						case 0 :
+							stringAsChar[0] = 'A';
+							memset( msize, stringAsChar[0], ERASER_SIZE );
+							break;
+						case 1 :
+							stringAsChar[0] = '^';
+							memset( msize, stringAsChar[0], ERASER_SIZE );
+							break;
+						case 2 :
+							srand(time(NULL));
+							for( int j=0 ; j < ERASER_SIZE ; j++ )
+								msize[j] = 'A' + (random() % 26);
+							break;
+						case 3 :
+							stringAsChar[0] = 'Z';
+							memset( msize, stringAsChar[0], ERASER_SIZE );
+							break;
+						case 4 :
+							stringAsChar[0] = 'A';
+							memset( msize, stringAsChar[0], ERASER_SIZE );
+							break;
+						case 5 :
+							stringAsChar[0] = '^';
+							memset( msize, stringAsChar[0], ERASER_SIZE );
+							break;
+						case 6 :
+							srand(time(NULL));
+							for( int j=0 ; j < ERASER_SIZE ; j++ )
+								msize[j] = 'A' + (random() % 26);
+							break;
+						default :
+							break;
+
+					}
+
 					while (gtk_events_pending ()) 
 						gtk_main_iteration (); 
 
@@ -679,7 +668,7 @@ int func_file_eraser_enc(char *filename)
 	char message[1024];
 	gdouble percent = 0.0;
 	gdouble size = 0.0;
-	char stringAsChar[5];
+	char stringAsChar[ERASER_SIZE];
 	char *msize;
 
 	memset( message, 0x00, sizeof(message));
@@ -716,24 +705,32 @@ int func_file_eraser_enc(char *filename)
 				size = 0;
 				BXLog( DBG, "Target File Eraser Start : [%d/%s]\n", i+1, filename );
 				
-				switch(i)
+				if( i == 0 && size == 0 )
 				{
-				// len = fwrite(stringAsChar, 1, len, file);
-
-					case 0 :
-						stringAsChar[0] = 'A' + (random() % 26);
-						break;
-					case 1 :
-						stringAsChar[0] = 0x00;
-						break;
-					default :
-						break;
+					size = sprintf( stringAsChar, "Blue X-ray Encrypte v1.0" );
+					fwrite( stringAsChar, 1, size, fp);
 				}
-
-				memset( msize, stringAsChar[0], ERASER_SIZE );
 
 				while (size<file_info.st_size)
 				{   
+					switch(i)
+					{
+						case 0 :
+							srand(time(NULL));
+							for( int j=0 ; j < ERASER_SIZE ; j++ )
+								msize[j] = ' ' + (random() % 127);
+
+//							stringAsChar[0] = ' ' + (random() % 127);
+//							memset( msize, stringAsChar[0], ERASER_SIZE );
+							break;
+						case 1 :
+							stringAsChar[0] = 0x00;
+							memset( msize, stringAsChar[0], ERASER_SIZE );
+							break;
+						default :
+							break;
+					}
+
 					while (gtk_events_pending ()) 
 						gtk_main_iteration (); 
 
@@ -748,6 +745,7 @@ int func_file_eraser_enc(char *filename)
 					percent = (size+(file_info.st_size*i))/(file_info.st_size*2)*100.0;
 					if( (int)size % PROGRESS_SIZE == 0 )
 					{
+//					BXLog( DBG, "fp[%d], size[%f], file_size[%ld], percent:[%f]\n", fp, size, file_info.st_size, percent );
 						memset( message, 0x00, strlen(message));
 								sprintf( message, "%.0f%% Complete", percent);
 					//				gchar *message = g_strdup_printf ("%.0f%% Complete", percent);
@@ -763,7 +761,7 @@ int func_file_eraser_enc(char *filename)
 				}
 				
 				BXLog( DBG, "Target File Eraser E n d : [%d/%s]\n", i+1, filename );
-				
+
 				func_gtk_dialog_modal(0, window, "\n    한단계 삭제가 진행완료 되었습니다.    \n");
 				fseek( fp, 0L, SEEK_SET );
 			}
