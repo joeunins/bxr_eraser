@@ -8,11 +8,11 @@
 #include <libgen.h>
 
 #define	PROGRESS_SIZE	102400	//100k
-#define	ERASER_SIZE		1024	//1k
+#define	ERASER_SIZE		512	//1k
+#define	ERASER_ENC_SIZE		1024	//1k
 
 /*- Log define ------------*/
 char	*LogName;
-//define LOGFILE __FILE__
 #define LOGFILE LogName
 #define ERR LOGFILE,1,__LINE__
 #define INF LOGFILE,2,__LINE__
@@ -30,12 +30,10 @@ void on_window_main_destroy();
 void on_smn_open_activate (GtkMenuItem *smn_open, gpointer *data);
 void on_smn_quit_activate (GtkMenuItem *smn_quit, gpointer *data);
 void on_smn_log_activate (GtkMenuItem *smn_log, gpointer *data);
-//void on_smn_about_activate (GtkMenuItem *smn_about, GtkAboutDialog *window_about); 
 void on_smn_about_activate (GtkMenuItem *smn_about, gpointer *data); 
 
 void on_btn_fileopen_clicked (GtkButton *btn_fileopen, gpointer *data);
-void on_btn_easy_clicked (GtkButton *btn_easy, gpointer data );
-//void on_btn_about_ok_clicked (GtkButton *btn_about_ok, GtkAboutDialog *window_about); 
+void on_btn_easy_clicked (GtkButton *btn_easy, gpointer *data );
 void on_btn_about_ok_clicked (GtkButton *btn_about_ok, gpointer *data); 
 
 int func_gtk_dialog_modal(int type, GtkWidget *window, char *message);
@@ -78,7 +76,6 @@ void on_btn_fileopen_clicked (GtkButton *btn_fileopen, gpointer *data)
 
     if( resp == GTK_RESPONSE_ACCEPT)
 	{
-//		g_print("%s\n", gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)));
 		gtk_button_set_label(GTK_BUTTON(btn_fileopen), 
 					gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)));
    	} 
@@ -87,13 +84,6 @@ void on_btn_fileopen_clicked (GtkButton *btn_fileopen, gpointer *data)
 
 	return;
 }
-
-#if 0
-void on_btn_fileopen_drag_drop(GtkWidget *button, gpointer data)
-{
-	on_btn_fileopen_clicked( button, &data);
-}
-#endif
 
 // called when button is clicked
 void on_smn_quit_activate (GtkMenuItem *smn_quit, gpointer *data)
@@ -110,7 +100,7 @@ void on_btn_about_ok_clicked (GtkButton *btn_about_ok, gpointer *data)
 }
 
 // called when button is clicked
-void on_btn_easy_clicked (GtkButton *btn_easy, gpointer data )
+void on_btn_easy_clicked (GtkButton *btn_easy, gpointer *data )
 {
 	char	filename[1024];
 	char	message[1024];
@@ -240,38 +230,23 @@ void on_btn_encrypt_clicked (GtkButton *btn_encrypt, gpointer data )
 // called when button is clicked
 void on_btn_trim_clicked()
 {
-	g_print("btn_trim_clicked...\n");
+	BXLog( DBG, "btn_trim_clicked...\n");
 	func_gtk_dialog_modal(0, window, "\n    현재는 해당 기능을 지원하지 않습니다.    \n");
 }
 
 // called when button is clicked
 void on_btn_temp_clicked()
 {
-	g_print("btn_temp_clicked...\n");
+	BXLog( DBG, "btn_temp_clicked...\n");
 	func_gtk_dialog_modal(0, window, "\n    현재는 해당 기능을 지원하지 않습니다.    \n");
 }
 
 // called when button is clicked
 void on_btn_setting_clicked()
 {
-	g_print("btn_setting_clicked...\n");
+	BXLog( DBG, "btn_setting_clicked...\n");
 	func_gtk_dialog_modal(0, window, "\n    현재는 해당 기능을 지원하지 않습니다.    \n");
 }
-
-#if 0
-// called when button is clicked
-void on_btn_hello_clicked()
-{
-    static unsigned int count = 0;
-    char str_count[30] = {0};
-    
-    gtk_label_set_text(GTK_LABEL(g_lbl_hello), "Hello, world!");
-    count++;
-    sprintf(str_count, "[%d]건", count);
-    gtk_label_set_text(GTK_LABEL(g_lbl_count), str_count);
-}
-
-#endif
 
 int main(int argc, char *argv[])
 {
@@ -344,7 +319,6 @@ int func_file_eraser_easy(char *filename)
 	char message[1024];
 	gdouble percent = 0.0;
 	gdouble size = 0.0;
-//	char stringAsChar[5];
 	char *msize;
 
 	memset( message, 0x00, sizeof(message));
@@ -366,19 +340,18 @@ int func_file_eraser_easy(char *filename)
 
 
 			msize = malloc(ERASER_SIZE);
-//			msize = malloc(file_info.st_size);
 			fp = fopen(filename, "w");
 			sprintf( message, "file size [%ld]", file_info.st_size);
 			gtk_label_set_text(GTK_LABEL(g_lbl_status), message);
 			
 			memset( message, 0x00, strlen(message));
 			sprintf( message, "%.0f%% Complete", percent);
-//				gchar *message = g_strdup_printf ("%.0f%% Complete", percent);
 			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), percent / 100.0);
 			gtk_progress_bar_set_text (GTK_PROGRESS_BAR(g_bar_progress), message);
 
 			size = 0;
-			BXLog( DBG, "Target File Eraser Start : [%d/%s]\n", 0, filename );
+//			BXLog( DBG, "Target File Eraser Start : [%d/%s]\n", 0, filename );
+			BXLog( DBG, "Target File Eraser Start : [%s]\n", filename );
 			
 			memset( msize, 0x00, ERASER_SIZE );
 
@@ -387,21 +360,15 @@ int func_file_eraser_easy(char *filename)
 				while (gtk_events_pending ()) 
 					gtk_main_iteration (); 
 
-//					BXLog( DBG, "fp[%d], size[%f], file_size[%ld], percent:[%f]\n", fp, size, file_info.st_size, percent );
-
+//				BXLog( DBG, "fp[%d], size[%f], file_size[%ld], percent:[%f]\n", fp, size, file_info.st_size, percent );
 
 				fwrite( msize, 1, ((file_info.st_size/size))>0?ERASER_SIZE:(file_info.st_size%ERASER_SIZE), fp);
 				size += ERASER_SIZE;
-//					size++;
-//					BXLog( DBG, "fp[%d], size[%f], file_size[%ld], percent:[%f]\n", fp, size, file_info.st_size, percent );
-//				g_usleep (100);
-//				percent = (size+(file_info.st_size*i))/(file_info.st_size*type)*100.0;
 				percent = size/file_info.st_size*100.0;
 				if( (int)size % PROGRESS_SIZE == 0 )
 				{
 					memset( message, 0x00, strlen(message));
-							sprintf( message, "%.0f%% Complete", percent);
-				//				gchar *message = g_strdup_printf ("%.0f%% Complete", percent);
+					sprintf( message, "%.0f%% Complete", percent);
 					gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), percent / 100.0);
 					gtk_progress_bar_set_text (GTK_PROGRESS_BAR(g_bar_progress), message);
 
@@ -410,10 +377,9 @@ int func_file_eraser_easy(char *filename)
 					sprintf( message, "file size [%.0f byte/%ld byte]\n", size, file_info.st_size);
 					gtk_label_set_text(GTK_LABEL(g_lbl_status), message);
 				}
-//				g_print("size[%f], file_size[%ld], percent:[%f]\n", size, file_info.st_size, percent );
 			}
 			
-			BXLog( DBG, "Target File Eraser E n d : [%d/%s]\n", 0, filename );
+//			BXLog( DBG, "Target File Eraser E n d : [%d/%s]\n\n", 0, filename );
 			
 			sprintf( message, "%.0f%% Complete", 100.0);
 			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 100.0);
@@ -425,70 +391,12 @@ int func_file_eraser_easy(char *filename)
 			sprintf( message, "file size [%.0f byte/%ld byte]\n", size, file_info.st_size);
 			gtk_label_set_text(GTK_LABEL(g_lbl_status), message);
 		}
-
-
-#if 0
-//			msize = malloc(file_info.st_size);
-			msize = malloc(ERASER_SIZE);
-			fp = fopen(filename, "w");
-			sprintf( message, "file size [%ld]", file_info.st_size);
-			gtk_label_set_text(GTK_LABEL(g_lbl_status), message);
-			
-			memset( message, 0x00, strlen(message));
-			sprintf( message, "%.0f%% Complete", percent);
-//				gchar *message = g_strdup_printf ("%.0f%% Complete", percent);
-			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), percent / 100.0);
-			gtk_progress_bar_set_text (GTK_PROGRESS_BAR(g_bar_progress), message);
-
-			size = 0;
-			BXLog( DBG, "size, st_size : [%f/%ld/%d/%d]\n", size, file_info.st_size );
-			BXLog( DBG, "Target File Eraser Start : [%d/%s]\n", 0, filename );
-			while (size<file_info.st_size)
-			{   
-				while (gtk_events_pending ()) 
-					gtk_main_iteration (); 
-
-				stringAsChar[0] = 0x00;
-				fwrite( stringAsChar, 1, 1, fp);
-
-				size++;
-
-				percent = size/file_info.st_size*100.0;
-				if( (int)size % PROGRESS_SIZE == 0 )
-				{
-					memset( message, 0x00, strlen(message));
-							sprintf( message, "%.0f%% Complete", percent);
-				//				gchar *message = g_strdup_printf ("%.0f%% Complete", percent);
-							gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), percent / 100.0);
-							gtk_progress_bar_set_text (GTK_PROGRESS_BAR(g_bar_progress), message);
-
-
-					memset( message, 0x00, strlen(message));
-					sprintf( message, "file size [%.0f byte/%ld byte]\n", size, file_info.st_size);
-					gtk_label_set_text(GTK_LABEL(g_lbl_status), message);
-				}
-//				g_print("size[%f], file_size[%ld], percent:[%f]\n", size, file_info.st_size, percent );
-			}
-			
-			BXLog( DBG, "Target File Eraser E n d : [%d/%s]\n", 0, filename );
-			
-			sprintf( message, "%.0f%% Complete", 100.0);
-			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 100.0);
-			gtk_progress_bar_set_text (GTK_PROGRESS_BAR(g_bar_progress), message);
-
-		
-			fclose(fp);
-			free(msize);
-			memset( message, 0x00, strlen(message));
-			sprintf( message, "file size [%.0f byte/%ld byte]\n", size, file_info.st_size);
-			gtk_label_set_text(GTK_LABEL(g_lbl_status), message);
-		}
-#endif
-
 	}
 	
-	func_gtk_dialog_modal(0, window, "\n    확인 후 삭제가 진행됩니다.    \n");
+	BXLog( DBG, "Target File Eraser E n d : [%s]\n\n", filename );
+//	func_gtk_dialog_modal(0, window, "\n    확인 후 삭제가 진행됩니다.    \n");
 	remove( filename );
+	func_gtk_dialog_modal(0, window, "\n    삭제가 완료되었습니다.    \n");
 	
 	return( TRUE );
 }
@@ -502,7 +410,7 @@ int func_file_eraser(int type, char *filename)
 	char message[1024];
 	gdouble percent = 0.0;
 	gdouble size = 0.0;
-	char stringAsChar[5];
+	char MsgTmp[5];
 	char *msize;
 
 	memset( message, 0x00, sizeof(message));
@@ -522,56 +430,57 @@ int func_file_eraser(int type, char *filename)
 		else
 		{
 			msize = malloc(ERASER_SIZE);
-//			msize = malloc(file_info.st_size);
 			fp = fopen(filename, "w");
 			sprintf( message, "file size [%ld]", file_info.st_size);
 			gtk_label_set_text(GTK_LABEL(g_lbl_status), message);
 			
 			memset( message, 0x00, strlen(message));
 			sprintf( message, "%.0f%% Complete", percent);
-//				gchar *message = g_strdup_printf ("%.0f%% Complete", percent);
 			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), percent / 100.0);
 			gtk_progress_bar_set_text (GTK_PROGRESS_BAR(g_bar_progress), message);
 
+			BXLog( DBG, "Target File Eraser Start : [%s]\n", filename );
 
 			for( int i=0 ; i < type ; i++ )
 			{
 				size = 0;
 //				BXLog( DBG, "size, st_size, i, type   : [%f/%ld/%d/%d]\n", size, file_info.st_size, i, type );
-				BXLog( DBG, "Target File Eraser Start : [%d/%s]\n", i+1, filename );
+//				BXLog( DBG, "Target File Eraser Start : [%d/%s]\n", i+1, filename );
 				while (size<file_info.st_size)
 				{   
 					switch(i)
 					{
 						case 0 :
-							stringAsChar[0] = 'A';
-							memset( msize, stringAsChar[0], ERASER_SIZE );
+							MsgTmp[0] = 'A';
+							memset( msize, MsgTmp[0], ERASER_SIZE );
 							break;
 						case 1 :
-							stringAsChar[0] = '^';
-							memset( msize, stringAsChar[0], ERASER_SIZE );
+							MsgTmp[0] = '^';
+							memset( msize, MsgTmp[0], ERASER_SIZE );
 							break;
 						case 2 :
 							srand(time(NULL));
-							for( int j=0 ; j < ERASER_SIZE ; j++ )
-								msize[j] = 'A' + (random() % 26);
+							if( size < ERASER_SIZE )
+								for( int j=0 ; j < ERASER_SIZE ; j++ )
+									msize[j] = 'A' + (random() % 26);
 							break;
 						case 3 :
-							stringAsChar[0] = 'Z';
-							memset( msize, stringAsChar[0], ERASER_SIZE );
+							MsgTmp[0] = 'Z';
+							memset( msize, MsgTmp[0], ERASER_SIZE );
 							break;
 						case 4 :
-							stringAsChar[0] = 'A';
-							memset( msize, stringAsChar[0], ERASER_SIZE );
+							MsgTmp[0] = 'A';
+							memset( msize, MsgTmp[0], ERASER_SIZE );
 							break;
 						case 5 :
-							stringAsChar[0] = '^';
-							memset( msize, stringAsChar[0], ERASER_SIZE );
+							MsgTmp[0] = '^';
+							memset( msize, MsgTmp[0], ERASER_SIZE );
 							break;
 						case 6 :
 							srand(time(NULL));
-							for( int j=0 ; j < ERASER_SIZE ; j++ )
-								msize[j] = 'A' + (random() % 26);
+							if( size < ERASER_SIZE )
+								for( int j=0 ; j < ERASER_SIZE ; j++ )
+									msize[j] = 'A' + (random() % 26);
 							break;
 						default :
 							break;
@@ -581,14 +490,8 @@ int func_file_eraser(int type, char *filename)
 					while (gtk_events_pending ()) 
 						gtk_main_iteration (); 
 
-//					BXLog( DBG, "fp[%d], size[%f], file_size[%ld], percent:[%f]\n", fp, size, file_info.st_size, percent );
-
-
 					fwrite( msize, 1, ((file_info.st_size/size))>0?ERASER_SIZE:(file_info.st_size%ERASER_SIZE), fp);
 					size += ERASER_SIZE;
-//					size++;
-//					BXLog( DBG, "fp[%d], size[%f], file_size[%ld], percent:[%f]\n", fp, size, file_info.st_size, percent );
-	//				g_usleep (100);
 					percent = (size+(file_info.st_size*i))/(file_info.st_size*type)*100.0;
 					if( (int)size % PROGRESS_SIZE == 0 )
 					{
@@ -603,12 +506,11 @@ int func_file_eraser(int type, char *filename)
 						sprintf( message, "file size [%.0f byte/%ld byte]\n", size, file_info.st_size);
 						gtk_label_set_text(GTK_LABEL(g_lbl_status), message);
 					}
-	//				g_print("size[%f], file_size[%ld], percent:[%f]\n", size, file_info.st_size, percent );
 				}
 				
-				BXLog( DBG, "Target File Eraser E n d : [%d/%s]\n", i+1, filename );
+//				BXLog( DBG, "Target File Eraser E n d : [%d/%s]\n\n", i+1, filename );
 				
-				func_gtk_dialog_modal(0, window, "\n    한단계 삭제가 진행완료 되었습니다.    \n");
+//				func_gtk_dialog_modal(0, window, "\n    한단계 삭제가 진행완료 되었습니다.    \n");
 				fseek( fp, 0L, SEEK_SET );
 			}
 
@@ -622,40 +524,12 @@ int func_file_eraser(int type, char *filename)
 			sprintf( message, "file size [%.0f byte/%ld byte]\n", size, file_info.st_size);
 			gtk_label_set_text(GTK_LABEL(g_lbl_status), message);
 		}
-
-#if 0
-		fp = fopen(filename, "r");
-		fseek(fp, 0, SEEK_END);    // 파일 포인터를 파일의 끝으로 이동시킴
-		size = ftell(fp);  
-		printf("권한이 없거나 존재하지 않습니다.");
-#endif
-
 	}
 
-#if 0
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 0.1 );
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 0.2 );
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 0.3 );
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 0.4 );
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 0.5 );
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 0.6 );
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 0.7 );
-	gtk_progress_bar_set_show_text(GTK_PROGRESS_BAR(g_bar_progress), 1);
-	sleep(1);	
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 20 );
-	sleep(1);	
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 30 );
-	sleep(1);	
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 40 );
-	sleep(1);	
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 50 );
-	sleep(1);
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 60 );
-	gtk_label_set_text(GTK_LABEL(g_lbl_status), "End...");
-#endif
-	
-	func_gtk_dialog_modal(0, window, "\n    확인 후 삭제가 진행됩니다.    \n");
+	BXLog( DBG, "Target File Eraser E n d : [%s]\n\n", filename );
+//	func_gtk_dialog_modal(0, window, "\n    확인 후 삭제가 진행됩니다.    \n");
 	remove( filename );
+	func_gtk_dialog_modal(0, window, "\n    삭제가 완료되었습니다.    \n");
 	
 	return( TRUE );
 }
@@ -668,7 +542,7 @@ int func_file_eraser_enc(char *filename)
 	char message[1024];
 	gdouble percent = 0.0;
 	gdouble size = 0.0;
-	char stringAsChar[ERASER_SIZE];
+	char MsgTmp[ERASER_ENC_SIZE];
 	char *msize;
 
 	memset( message, 0x00, sizeof(message));
@@ -687,28 +561,27 @@ int func_file_eraser_enc(char *filename)
 		}
 		else
 		{
-			msize = malloc(ERASER_SIZE);
-//			msize = malloc(file_info.st_size);
+			msize = malloc(ERASER_ENC_SIZE);
 			fp = fopen(filename, "w");
 			sprintf( message, "file size [%ld]", file_info.st_size);
 			gtk_label_set_text(GTK_LABEL(g_lbl_status), message);
 			
 			memset( message, 0x00, strlen(message));
 			sprintf( message, "%.0f%% Complete", percent);
-//				gchar *message = g_strdup_printf ("%.0f%% Complete", percent);
 			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), percent / 100.0);
 			gtk_progress_bar_set_text (GTK_PROGRESS_BAR(g_bar_progress), message);
 
+			BXLog( DBG, "Target File Eraser Start : [%s]\n", filename );
 
 			for( int i=0 ; i < 2 ; i++ )
 			{
 				size = 0;
-				BXLog( DBG, "Target File Eraser Start : [%d/%s]\n", i+1, filename );
+//				BXLog( DBG, "Target File Eraser Start : [%d/%s]\n", i+1, filename );
 				
 				if( i == 0 && size == 0 )
 				{
-					size = sprintf( stringAsChar, "Blue X-ray Encrypte v1.0" );
-					fwrite( stringAsChar, 1, size, fp);
+					size = sprintf( MsgTmp, "Blue X-ray Encrypte v1.0" );
+					fwrite( MsgTmp, 1, size, fp);
 				}
 
 				while (size<file_info.st_size)
@@ -717,15 +590,14 @@ int func_file_eraser_enc(char *filename)
 					{
 						case 0 :
 							srand(time(NULL));
-							for( int j=0 ; j < ERASER_SIZE ; j++ )
-								msize[j] = ' ' + (random() % 127);
+							if( size < ERASER_ENC_SIZE )
+								for( int j=0 ; j < ERASER_ENC_SIZE ; j++ )
+									msize[j] = ' ' + (random() % 127);
 
-//							stringAsChar[0] = ' ' + (random() % 127);
-//							memset( msize, stringAsChar[0], ERASER_SIZE );
 							break;
 						case 1 :
-							stringAsChar[0] = 0x00;
-							memset( msize, stringAsChar[0], ERASER_SIZE );
+							MsgTmp[0] = 0x00;
+							memset( msize, MsgTmp[0], ERASER_ENC_SIZE );
 							break;
 						default :
 							break;
@@ -734,35 +606,25 @@ int func_file_eraser_enc(char *filename)
 					while (gtk_events_pending ()) 
 						gtk_main_iteration (); 
 
-//					BXLog( DBG, "fp[%d], size[%f], file_size[%ld], percent:[%f]\n", fp, size, file_info.st_size, percent );
-
-
-					fwrite( msize, 1, ((file_info.st_size/size))>0?ERASER_SIZE:(file_info.st_size%ERASER_SIZE), fp);
-					size += ERASER_SIZE;
-//					size++;
-//					BXLog( DBG, "fp[%d], size[%f], file_size[%ld], percent:[%f]\n", fp, size, file_info.st_size, percent );
-	//				g_usleep (100);
+					fwrite( msize, 1, ((file_info.st_size/size))>0?ERASER_ENC_SIZE:(file_info.st_size%ERASER_ENC_SIZE), fp);
+					size += ERASER_ENC_SIZE;
 					percent = (size+(file_info.st_size*i))/(file_info.st_size*2)*100.0;
 					if( (int)size % PROGRESS_SIZE == 0 )
 					{
-//					BXLog( DBG, "fp[%d], size[%f], file_size[%ld], percent:[%f]\n", fp, size, file_info.st_size, percent );
 						memset( message, 0x00, strlen(message));
-								sprintf( message, "%.0f%% Complete", percent);
-					//				gchar *message = g_strdup_printf ("%.0f%% Complete", percent);
+						sprintf( message, "%.0f%% Complete", percent);
 						gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), percent / 100.0);
 						gtk_progress_bar_set_text (GTK_PROGRESS_BAR(g_bar_progress), message);
-
 
 						memset( message, 0x00, strlen(message));
 						sprintf( message, "file size [%.0f byte/%ld byte]\n", size, file_info.st_size);
 						gtk_label_set_text(GTK_LABEL(g_lbl_status), message);
 					}
-	//				g_print("size[%f], file_size[%ld], percent:[%f]\n", size, file_info.st_size, percent );
 				}
 				
-				BXLog( DBG, "Target File Eraser E n d : [%d/%s]\n", i+1, filename );
+//				BXLog( DBG, "Target File Eraser E n d : [%d/%s]\n\n", i+1, filename );
 
-				func_gtk_dialog_modal(0, window, "\n    한단계 삭제가 진행완료 되었습니다.    \n");
+//				func_gtk_dialog_modal(0, window, "\n    한단계 삭제가 진행완료 되었습니다.    \n");
 				fseek( fp, 0L, SEEK_SET );
 			}
 
@@ -779,8 +641,10 @@ int func_file_eraser_enc(char *filename)
 	}
 	
 	
-	func_gtk_dialog_modal(0, window, "\n    확인 후 삭제가 진행됩니다.    \n");
+	BXLog( DBG, "Target File Eraser E n d : [%s]\n\n", filename );
+//	func_gtk_dialog_modal(0, window, "\n    확인 후 삭제가 진행됩니다.    \n");
 	remove( filename );
+	func_gtk_dialog_modal(0, window, "\n    삭제가 완료되었습니다.    \n");
 
 	return( TRUE );
 }
@@ -825,9 +689,9 @@ int BXLog(const char *logfile, int logflag, int logline, const char *fmt, ...)
     tm = localtime(&t.tv_sec);
 
     /* [HHMMSS ssssss flag __LINE__] */
-    len = sprintf(sTmp, "[%5d:%08x/%02d%02d%02d %06ld/%s:%4d]",
+    len = sprintf(sTmp, "[%5d:%08x/%02d:%02d:%02d.%03ld/%s:%4d]",
             getpid(), (unsigned int)pthread_self(),
-            tm->tm_hour, tm->tm_min, tm->tm_sec, t.tv_usec,
+            tm->tm_hour, tm->tm_min, tm->tm_sec, t.tv_usec/1000,
             sFlg, logline );
 
     va_start(ap, fmt);
