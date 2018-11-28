@@ -9,7 +9,7 @@
 
 #define	PROGRESS_SIZE	102400	//100k
 #define	ERASER_SIZE		512	//1k
-#define	ERASER_ENC_SIZE		1024	//1k
+#define	ERASER_ENC_SIZE		896	//1k
 
 /*- Log define ------------*/
 char	*LogName;
