@@ -8,12 +8,12 @@ Blue X-ray Eraser v1.0
 Table of content
 ----------------
 
-*What is BXR_ERASER?
-  *Purpose of project
-  *program description
-*installation
-*License
-*Link
+* What is BXR_ERASER?
+  * Purpose of project
+  * program description
+* installation
+* License
+* Link
 
 기술개발 목적
 -------------
