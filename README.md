@@ -1,5 +1,6 @@
 BXR_ERASER (data wiping solution)
 =================================
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/eda5325fb8144c9bba8e48eaa852d300)](https://app.codacy.com/app/joeunins/bxr_eraser?utm_source=github.com&utm_medium=referral&utm_content=joeunins/bxr_eraser&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/joeunins/bxr_eraser.svg?branch=master)](https://travis-ci.org/joeunins/bxr_eraser)
 
 ![main_red](https://user-images.githubusercontent.com/40619246/61026393-246a4900-a3ee-11e9-8ca5-812c288f83da.png)
