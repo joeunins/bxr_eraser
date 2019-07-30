@@ -1,0 +1,9 @@
+language: c
+sudo: false # only for faster builds
+script:
+  - clang -coverage -O0 main.c -o main
+  - ./src/main
+  - gcov main.c
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
