@@ -125,7 +125,7 @@ void on_btn_easy_clicked (GtkButton *btn_easy, gpointer *data )
 		}
 		else
 		{
-			gtk_label_set_text(GTK_LABEL(g_lbl_status), "Canceled...");
+			gtk_label_set_text(GTK_LABEL(g_lbl_status), "Cancelled...");
 			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 0 );
 		}
 	}
@@ -157,7 +157,7 @@ void on_btn_3pass_clicked (GtkButton *btn_3pass, gpointer data )
 		}
 		else
 		{
-			gtk_label_set_text(GTK_LABEL(g_lbl_status), "Canceled...");
+			gtk_label_set_text(GTK_LABEL(g_lbl_status), "Cancelled...");
 			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 0 );
 		}
 	}
@@ -189,7 +189,7 @@ void on_btn_7pass_clicked (GtkButton *btn_7pass, gpointer data )
 		}
 		else
 		{
-			gtk_label_set_text(GTK_LABEL(g_lbl_status), "Canceled...");
+			gtk_label_set_text(GTK_LABEL(g_lbl_status), "Cancelled...");
 			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 0 );
 		}
 	}
@@ -333,7 +333,7 @@ int func_file_eraser_easy(char *filename)
 	{
 		if( stat( filename, &file_info) > 0 )
 		{
-			gtk_label_set_text(GTK_LABEL(g_lbl_status), "File Check Error...");
+			gtk_label_set_text(GTK_LABEL(g_lbl_status), "Checking File Errors...");
 		}
 		else
 		{
@@ -415,7 +415,7 @@ int func_file_eraser(int type, char *filename)
 
 	memset( message, 0x00, sizeof(message));
 	
-	gtk_label_set_text(GTK_LABEL(g_lbl_status), "Eraser Start...");
+	gtk_label_set_text(GTK_LABEL(g_lbl_status), "Start Eraser...");
 
 	if( access( filename, mode ) != 0 )
 	{
@@ -425,7 +425,7 @@ int func_file_eraser(int type, char *filename)
 	{
 		if( stat( filename, &file_info) > 0 )
 		{
-			gtk_label_set_text(GTK_LABEL(g_lbl_status), "File Check Error...");
+			gtk_label_set_text(GTK_LABEL(g_lbl_status), "Checking File Errors...");
 		}
 		else
 		{
@@ -510,7 +510,7 @@ int func_file_eraser(int type, char *filename)
 				
 //				BXLog( DBG, "Target File Eraser E n d : [%d/%s]\n\n", i+1, filename );
 				
-//				func_gtk_dialog_modal(0, window, "\n    한단계 삭제가 진행완료 되었습니다.    \n");
+//				func_gtk_dialog_modal(0, window, "\n   1 pass 삭제가 진행완료 되었습니다.    \n");
 				fseek( fp, 0L, SEEK_SET );
 			}
 
@@ -547,7 +547,7 @@ int func_file_eraser_enc(char *filename)
 
 	memset( message, 0x00, sizeof(message));
 	
-	gtk_label_set_text(GTK_LABEL(g_lbl_status), "Eraser Start...");
+	gtk_label_set_text(GTK_LABEL(g_lbl_status), "Start Eraser...");
 
 	if( access( filename, mode ) != 0 )
 	{
@@ -557,7 +557,7 @@ int func_file_eraser_enc(char *filename)
 	{
 		if( stat( filename, &file_info) > 0 )
 		{
-			gtk_label_set_text(GTK_LABEL(g_lbl_status), "File Check Error...");
+			gtk_label_set_text(GTK_LABEL(g_lbl_status), "Checking File Errors...");
 		}
 		else
 		{
@@ -624,7 +624,7 @@ int func_file_eraser_enc(char *filename)
 				
 //				BXLog( DBG, "Target File Eraser E n d : [%d/%s]\n\n", i+1, filename );
 
-//				func_gtk_dialog_modal(0, window, "\n    한단계 삭제가 진행완료 되었습니다.    \n");
+//				func_gtk_dialog_modal(0, window, "\n    1 pass 삭제가 진행완료 되었습니다.    \n");
 				fseek( fp, 0L, SEEK_SET );
 			}
 
