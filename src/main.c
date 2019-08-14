@@ -221,7 +221,7 @@ void on_btn_encrypt_clicked (GtkButton *btn_encrypt, gpointer data )
 		}
 		else
 		{
-			gtk_label_set_text(GTK_LABEL(g_lbl_status), "Canceled...");
+			gtk_label_set_text(GTK_LABEL(g_lbl_status), "Cancelled...");
 			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(g_bar_progress), 0 );
 		}
 	}
